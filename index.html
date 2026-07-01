@@ -1,507 +1,1231 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Web Refactor - Websites That Rank, Engage, and Convert</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Instrument+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WebRefactor — refactor your online presence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#0d1117;
+  --bg-elev:#161b22;
+  --bg-hover:#1c2128;
+  --bg-inset:#010409;
+  --border:#30363d;
+  --border-muted:#21262d;
+  --text:#c9d1d9;
+  --text-dim:#8b949e;
+  --text-bright:#f0f6fc;
+  --green:#3fb950;
+  --green-bg:#238636;
+  --green-bg-hover:#2ea043;
+  --red:#f85149;
+  --blue:#58a6ff;
+  --yellow:#d29922;
+  --purple:#bc8cff;
+  --mono:'JetBrains Mono',ui-monospace,monospace;
+  --sans:'Inter',system-ui,sans-serif;
+  --radius:6px;
+}
+html[data-theme="light"]{
+  --bg:#ffffff;
+  --bg-elev:#f6f8fa;
+  --bg-hover:#eef1f4;
+  --bg-inset:#f0f2f5;
+  --border:#d0d7de;
+  --border-muted:#e3e7eb;
+  --text:#37414b;
+  --text-dim:#59636e;
+  --text-bright:#1b1f24;
+  --green:#1a7f37;
+  --green-bg:#1a7f37;
+  --green-bg-hover:#187535;
+  --red:#cf222e;
+  --blue:#0969da;
+  --yellow:#9a6700;
+  --purple:#8250df;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:var(--sans);
+  font-size:19.5px;
+  line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  transition:background .25s ease,color .25s ease;
+}
+a{color:inherit;text-decoration:none;}
+img{max-width:100%;display:block;}
+button{font-family:inherit;cursor:pointer;}
+input,select,textarea{font-family:inherit;}
+::selection{background:rgba(63,185,80,0.3);color:var(--text-bright);}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+/* ---------- editor chrome header ---------- */
+.chrome{
+  position:sticky;top:0;z-index:100;
+  background:var(--bg-inset);
+  border-bottom:1px solid var(--border-muted);
+}
+.chrome-bar{
+  display:flex;align-items:center;gap:16px;
+  padding:10px 20px;
+  border-bottom:1px solid var(--border-muted);
+}
+.chrome-dots{display:flex;gap:7px;flex-shrink:0;}
+.chrome-dots span{width:11px;height:11px;border-radius:50%;display:block;}
+.chrome-dots span:nth-child(1){background:#ff5f56;}
+.chrome-dots span:nth-child(2){background:#ffbd2e;}
+.chrome-dots span:nth-child(3){background:#27c93f;}
+.chrome-address{
+  font-family:var(--mono);font-size:14px;color:var(--text-dim);
+  background:var(--bg-elev);border:1px solid var(--border-muted);
+  border-radius:5px;padding:4px 12px;flex:1;max-width:340px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.chrome-repo{
+  margin-left:auto;display:flex;align-items:center;gap:8px;
+  font-family:var(--mono);font-size:14px;color:var(--text-dim);
+  white-space:nowrap;
+}
+.chrome-repo .dot{width:7px;height:7px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 6px var(--green);flex-shrink:0;}
+.chrome-repo b{color:var(--text-bright);font-weight:600;}
+@media(max-width:640px){.chrome-address{display:none;}}
+
+.tabs{
+  display:flex;overflow-x:auto;scrollbar-width:none;
+}
+.tabs::-webkit-scrollbar{display:none;}
+.tab{
+  font-family:var(--mono);font-size:15.5px;
+  color:var(--text-dim);
+  padding:12px 18px;
+  border-right:1px solid var(--border-muted);
+  display:flex;align-items:center;gap:8px;
+  white-space:nowrap;flex-shrink:0;
+  background:transparent;
+  border-top:2px solid transparent;
+  transition:color .15s,background .15s;
+}
+.tab:hover{color:var(--text);background:var(--bg-elev);}
+.tab .dot{width:6px;height:6px;border-radius:50%;background:var(--border);flex-shrink:0;}
+.tab.active{
+  color:var(--text-bright);
+  background:var(--bg);
+  border-top-color:var(--green);
+}
+.tab.active .dot{background:var(--green);box-shadow:0 0 5px var(--green);}
+
+/* ---------- layout helpers ---------- */
+section{padding:104px 0;border-bottom:1px solid var(--border-muted);position:relative;overflow:hidden;}
+.eyebrow{
+  font-family:var(--mono);font-size:15.5px;color:var(--text-dim);
+  display:flex;align-items:center;gap:10px;margin-bottom:20px;
+}
+.eyebrow::before{content:'//';color:var(--green);font-weight:700;}
+h2.title{
+  font-family:var(--mono);font-weight:800;font-size:clamp(32px,4.6vw,48px);
+  color:var(--text-bright);letter-spacing:-0.5px;margin-bottom:16px;
+}
+.lede{color:var(--text-dim);font-size:20px;max-width:580px;margin-bottom:56px;}
+
+/* ---------- hero ---------- */
+.hero{padding:96px 0 112px;position:relative;overflow:hidden;}
+.hero::before{
+  content:'';position:absolute;top:-200px;right:-150px;width:600px;height:600px;
+  background:radial-gradient(circle,rgba(63,185,80,0.1),transparent 70%);
+  pointer-events:none;
+  will-change:transform;
+  transform:translateY(var(--glowY,0px));
+}
+html[data-theme="light"] .hero::before{background:radial-gradient(circle,rgba(26,127,55,0.08),transparent 70%);}
+.hero-grid{display:grid;grid-template-columns:1.05fr 0.95fr;gap:60px;align-items:center;position:relative;z-index:2;}
+.parallax-field{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:1;}
+.frag{
+  position:absolute;font-family:var(--mono);font-size:14.5px;color:var(--text-dim);
+  opacity:0.35;white-space:nowrap;will-change:transform;
+}
+section .parallax-field{z-index:0;}
+@media(max-width:800px){.frag{display:none;}}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;gap:44px;}}
+
+.diffblock{
+  background:var(--bg-inset);border:1px solid var(--border);
+  border-radius:var(--radius);overflow:hidden;
+  font-family:var(--mono);font-size:17px;
+  box-shadow:0 24px 60px -20px rgba(0,0,0,0.6);
+  position:relative;z-index:2;
+  will-change:transform;
+}
+.diffblock-head{
+  padding:9px 14px;border-bottom:1px solid var(--border);
+  color:var(--text-dim);font-size:13.5px;display:flex;justify-content:space-between;
+}
+.diffblock-head span:last-child{color:var(--yellow);}
+.dline{display:flex;}
+.dline .num{
+  width:34px;flex-shrink:0;text-align:right;padding-right:12px;
+  color:#484f58;user-select:none;
+}
+.dline .marker{width:20px;flex-shrink:0;text-align:center;font-weight:700;}
+.dline .code{padding:2px 14px 2px 0;white-space:pre;overflow-x:auto;color:var(--text);}
+.dline--ctx .marker{color:#484f58;}
+.dline--rem{background:rgba(248,81,73,0.08);}
+.dline--rem .marker{color:var(--red);}
+.dline--rem .code{color:#ffa198;text-decoration:line-through;text-decoration-color:rgba(255,161,152,0.5);}
+.dline--add{background:rgba(63,185,80,0.1);}
+.dline--add .marker{color:var(--green);}
+.dline--add .code{color:#7ee2a8;}
+.cursor{display:inline-block;width:8px;height:15px;background:var(--green);
+  vertical-align:middle;animation:blink 1s step-end infinite;margin-left:2px;}
+@keyframes blink{0%,49%{opacity:1;}50%,100%{opacity:0;}}
+
+.hero-copy{position:relative;z-index:2;}
+.hero-copy h1{
+  font-family:var(--mono);font-weight:800;
+  font-size:clamp(34px,4.8vw,52px);line-height:1.15;
+  color:var(--text-bright);letter-spacing:-0.5px;margin-bottom:22px;
+}
+.hero-copy h1 .hl{color:var(--green);}
+.hero-copy p{color:var(--text-dim);font-size:20px;max-width:500px;margin-bottom:34px;}
+.btn-row{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:44px;}
+.btn{
+  font-family:var(--mono);font-size:17px;font-weight:600;
+  padding:13px 24px;border-radius:6px;border:1px solid transparent;
+  display:inline-flex;align-items:center;gap:8px;transition:all .15s;
+}
+.btn-primary{background:var(--green-bg);color:#fff;}
+.btn-primary:hover{background:var(--green-bg-hover);transform:translateY(-1px);}
+.btn-outline{border-color:var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg-elev);border-color:var(--text-dim);transform:translateY(-1px);}
+
+.stat-row{display:flex;gap:30px;flex-wrap:wrap;}
+.stat{font-family:var(--mono);}
+.stat .n{font-size:30px;font-weight:800;color:var(--green);}
+.stat .n::before{content:'+';}
+.stat .l{font-size:14px;color:var(--text-dim);text-transform:uppercase;letter-spacing:0.06em;}
+
+/* ---------- theme toggle ---------- */
+.theme-toggle{
+  display:flex;align-items:center;gap:6px;background:var(--bg-elev);
+  border:1px solid var(--border-muted);border-radius:20px;padding:3px;flex-shrink:0;
+}
+.theme-toggle button{
+  width:28px;height:28px;border-radius:50%;border:none;background:transparent;
+  color:var(--text-dim);display:flex;align-items:center;justify-content:center;
+  font-size:15.5px;transition:background .15s,color .15s;
+}
+.theme-toggle button.active{background:var(--green-bg);color:#fff;}
+
+/* ---------- git log / process ---------- */
+.commitlog{position:relative;padding-left:36px;}
+.commit{position:relative;padding-bottom:40px;}
+.commit:last-child{padding-bottom:0;}
+.commit::before{
+  content:'';position:absolute;left:-25px;top:6px;width:11px;height:11px;
+  border-radius:50%;background:var(--bg);border:2px solid var(--green);
+}
+.commit::after{
+  content:'';position:absolute;left:-20px;top:20px;bottom:-6px;width:1px;
+  background:var(--border);
+}
+.commit:last-child::after{display:none;}
+.commit-head{display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:8px;}
+.commit-hash{font-family:var(--mono);font-size:14px;color:var(--yellow);background:rgba(210,153,34,0.1);
+  padding:2px 8px;border-radius:4px;}
+.commit-msg{font-family:var(--mono);font-weight:700;color:var(--text-bright);font-size:18px;}
+.commit-body{color:var(--text-dim);font-size:17px;max-width:520px;margin-bottom:8px;}
+.commit-files{font-family:var(--mono);font-size:13.5px;color:var(--text-dim);}
+.commit-files b{color:var(--green);}
+
+/* ---------- expertise file tabs ---------- */
+.expertise{margin-top:64px;}
+.filetabs{display:flex;flex-wrap:wrap;border-bottom:1px solid var(--border);margin-bottom:0;}
+.filetab{
+  font-family:var(--mono);font-size:14.5px;color:var(--text-dim);
+  padding:10px 16px;border:1px solid transparent;border-bottom:none;
+  border-radius:6px 6px 0 0;background:transparent;display:flex;align-items:center;gap:8px;
+}
+.filetab .sq{width:8px;height:8px;border-radius:2px;flex-shrink:0;}
+.filetab.active{color:var(--text-bright);background:var(--bg-elev);border-color:var(--border);}
+.filepanel{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:0 6px 6px 6px;
+  padding:32px;font-family:var(--mono);display:none;
+}
+.filepanel.active{display:block;}
+.filepanel .obj-line{font-size:15px;color:var(--text-dim);}
+.filepanel .key{color:var(--blue);}
+.filepanel .str{color:var(--green);}
+.filepanel h3{font-family:var(--sans);font-size:22.5px;color:var(--text-bright);margin:14px 0 10px;}
+.filepanel p{font-family:var(--sans);color:var(--text-dim);font-size:17px;max-width:480px;margin-bottom:16px;}
+.chiprow{display:flex;flex-wrap:wrap;gap:8px;}
+.chip{font-family:var(--mono);font-size:13.5px;color:var(--text);border:1px solid var(--border);
+  padding:4px 10px;border-radius:20px;background:var(--bg);}
+
+/* ---------- portfolio ---------- */
+.filterrow{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:36px;}
+.filterbtn{
+  font-family:var(--mono);font-size:14px;color:var(--text-dim);
+  border:1px solid var(--border);border-radius:20px;padding:6px 14px;background:transparent;
+}
+.filterbtn.active{background:var(--green-bg);border-color:var(--green-bg);color:#fff;}
+.worklist{display:flex;flex-direction:column;}
+.workitem{
+  display:grid;grid-template-columns:110px 1fr auto;gap:20px;align-items:center;
+  padding:20px 0;border-bottom:1px solid var(--border-muted);
+}
+.workitem:last-child{border-bottom:none;}
+.workitem .hash{font-family:var(--mono);font-size:14px;color:var(--text-dim);}
+.workitem .main strong{font-family:var(--mono);font-size:18px;color:var(--text-bright);display:block;margin-bottom:4px;}
+.workitem .main span{color:var(--text-dim);font-size:15.5px;display:block;max-width:460px;}
+.tag{font-family:var(--mono);font-size:12.5px;padding:3px 9px;border-radius:12px;white-space:nowrap;font-weight:600;}
+.tag--corporate{background:rgba(88,166,255,0.12);color:var(--blue);}
+.tag--e-commerce{background:rgba(188,140,255,0.12);color:var(--purple);}
+.tag--ngo{background:rgba(210,153,34,0.14);color:var(--yellow);}
+.tag--service{background:rgba(248,81,73,0.12);color:var(--red);}
+.workitem .visit{font-family:var(--mono);font-size:14px;color:var(--green);white-space:nowrap;}
+.workitem .visit:hover{text-decoration:underline;}
+@media(max-width:640px){.workitem{grid-template-columns:1fr;gap:8px;}.workitem .hash{order:3;}}
+
+/* ---------- pricing ---------- */
+.region-toggle{display:flex;gap:8px;margin-bottom:36px;}
+.regionbtn{
+  font-family:var(--mono);font-size:14.5px;color:var(--text-dim);
+  border:1px solid var(--border);border-radius:20px;padding:7px 16px;background:transparent;
+  display:flex;align-items:center;gap:7px;
+}
+.regionbtn.active{background:var(--green-bg);border-color:var(--green-bg);color:#fff;}
+.discount-banner{
+  font-family:var(--mono);font-size:15px;color:var(--green);
+  background:rgba(63,185,80,0.1);border:1px solid rgba(63,185,80,0.3);
+  border-radius:6px;padding:10px 16px;margin-bottom:32px;display:inline-block;
+}
+.price-old{
+  font-family:var(--mono);font-size:19px;color:var(--red);text-decoration:line-through;
+  text-decoration-color:rgba(248,81,73,0.6);margin-right:8px;font-weight:600;
+}
+.price-cut{
+  font-family:var(--mono);font-size:12.5px;color:#fff;background:var(--red);
+  border-radius:4px;padding:2px 7px;vertical-align:middle;font-weight:700;
+}
+.pricegrid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;}
+@media(max-width:860px){.pricegrid{grid-template-columns:1fr;}}
+.pricecard{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;
+  padding:30px;position:relative;display:flex;flex-direction:column;
+}
+.pricecard.popular{border-color:var(--green);box-shadow:0 0 0 1px var(--green);}
+.pricecard .badge{
+  position:absolute;top:-12px;right:24px;background:var(--green-bg);color:#fff;
+  font-family:var(--mono);font-size:12.5px;font-weight:700;padding:4px 10px;border-radius:20px;
+}
+.pkgname{font-family:var(--mono);font-size:14.5px;color:var(--text-dim);margin-bottom:6px;}
+.pkgname::before{content:'@webrefactor/';color:var(--text-dim);}
+.pkgname b{color:var(--green);}
+.pricecard h3{font-family:var(--sans);font-size:24.5px;color:var(--text-bright);margin-bottom:14px;}
+.price{font-family:var(--mono);font-size:42.5px;font-weight:800;color:var(--text-bright);margin-bottom:2px;}
+.price span{font-size:15.5px;color:var(--text-dim);font-weight:400;}
+.pricecard .sub{color:var(--text-dim);font-size:15px;margin-bottom:22px;}
+.depslist{list-style:none;margin-bottom:26px;flex:1;}
+.depslist li{
+  font-family:var(--mono);font-size:15px;color:var(--text);
+  padding:7px 0;border-bottom:1px solid var(--border-muted);display:flex;gap:9px;
+}
+.depslist li::before{content:'+';color:var(--green);font-weight:700;}
+.pricecard .btn{width:100%;justify-content:center;}
+
+/* ---------- calculator ---------- */
+.terminal{
+  background:var(--bg-inset);border:1px solid var(--border);border-radius:8px;overflow:hidden;
+  box-shadow:0 24px 60px -24px rgba(0,0,0,0.7);
+}
+.term-head{
+  display:flex;align-items:center;gap:16px;padding:11px 16px;border-bottom:1px solid var(--border);
+}
+.term-head .chrome-dots span{width:10px;height:10px;}
+.term-head .lbl{font-family:var(--mono);font-size:14px;color:var(--text-dim);}
+.term-body{padding:34px;display:grid;grid-template-columns:1fr 1fr;gap:40px;}
+@media(max-width:800px){.term-body{grid-template-columns:1fr;}}
+.field{margin-bottom:22px;}
+.field label{
+  display:block;font-family:var(--mono);font-size:14px;color:var(--text-dim);margin-bottom:8px;
+}
+.field label::before{content:'--';color:var(--blue);}
+.field select, .field input[type=range]{width:100%;}
+.field select{
+  background:var(--bg-elev);border:1px solid var(--border);color:var(--text);
+  padding:10px 12px;border-radius:6px;font-family:var(--mono);font-size:15px;
+}
+.rangewrap{display:flex;align-items:center;gap:14px;}
+.rangewrap input[type=range]{accent-color:var(--green);}
+.rangeval{font-family:var(--mono);font-size:15px;color:var(--green);min-width:44px;text-align:right;}
+.checkgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px 16px;}
+@media(max-width:480px){.checkgrid{grid-template-columns:1fr;}}
+.checkline{display:flex;align-items:center;gap:9px;font-family:var(--mono);font-size:14.5px;color:var(--text);}
+.checkline input{accent-color:var(--green);width:15px;height:15px;}
+.radiorow{display:flex;gap:10px;flex-wrap:wrap;}
+.radiopill{
+  font-family:var(--mono);font-size:14px;border:1px solid var(--border);border-radius:20px;
+  padding:6px 14px;color:var(--text-dim);position:relative;cursor:pointer;
+}
+.radiopill input{position:absolute;opacity:0;pointer-events:none;}
+.radiopill.checked{background:rgba(63,185,80,0.1);border-color:var(--green);color:var(--green);}
+
+.output{
+  grid-column:1/-1;background:var(--bg-elev);border:1px solid var(--border);border-radius:6px;
+  padding:24px 26px;font-family:var(--mono);font-size:15.5px;
+}
+.output .comment{color:var(--text-dim);}
+.output .brace{color:var(--text);}
+.output .key{color:var(--blue);}
+.output .val{color:var(--green);}
+.output-line{padding-left:18px;}
+.calc-note{font-family:var(--sans);font-size:14px;color:var(--text-dim);margin-top:14px;grid-column:1/-1;}
+
+/* ---------- reviews ---------- */
+.reviewgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;}
+@media(max-width:900px){.reviewgrid{grid-template-columns:1fr 1fr;}}
+@media(max-width:640px){.reviewgrid{grid-template-columns:1fr;}}
+.reviewcard{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;padding:22px;
+}
+.review-top{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.avatar{
+  width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-weight:700;font-size:14.5px;color:#0d1117;flex-shrink:0;
+}
+.review-name{font-size:16px;font-weight:600;color:var(--text-bright);}
+.review-role{font-size:14px;color:var(--text-dim);font-family:var(--mono);}
+.approved{
+  margin-left:auto;font-family:var(--mono);font-size:12px;color:var(--green);
+  border:1px solid var(--green);border-radius:12px;padding:2px 8px;white-space:nowrap;
+}
+.reviewcard p{font-size:16px;color:var(--text);}
+
+/* ---------- contact ---------- */
+.contact-grid{display:grid;grid-template-columns:0.9fr 1.1fr;gap:56px;}
+@media(max-width:900px){.contact-grid{grid-template-columns:1fr;}}
+.whoami{font-family:var(--mono);font-size:15px;line-height:2;}
+.whoami .k{color:var(--text-dim);}
+.whoami .v{color:var(--text-bright);}
+.whoami a.v:hover{color:var(--green);}
+.social-row{display:flex;gap:10px;margin-top:22px;}
+.social-row a{
+  width:36px;height:36px;border:1px solid var(--border);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:13.5px;color:var(--text-dim);
+}
+.social-row a:hover{border-color:var(--green);color:var(--green);}
+
+.commitform{background:var(--bg-inset);border:1px solid var(--border);border-radius:8px;padding:28px;}
+.commitform .prompt{font-family:var(--mono);font-size:15px;color:var(--text-dim);margin-bottom:18px;}
+.commitform .prompt b{color:var(--green);}
+.formfield{margin-bottom:16px;}
+.formfield label{display:block;font-family:var(--mono);font-size:13.5px;color:var(--text-dim);margin-bottom:6px;}
+.formfield input, .formfield textarea{
+  width:100%;background:var(--bg-elev);border:1px solid var(--border);border-radius:6px;
+  padding:11px 13px;color:var(--text);font-family:var(--mono);font-size:15px;
+}
+.formfield input:focus, .formfield textarea:focus{outline:2px solid var(--green);outline-offset:1px;}
+.formfield textarea{resize:vertical;min-height:90px;}
+.form-msg{font-family:var(--mono);font-size:14.5px;color:var(--green);margin-top:14px;display:none;}
+.form-msg.show{display:block;}
+
+/* ---------- footer ---------- */
+footer{padding:60px 0 40px;}
+.footgrid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:40px;margin-bottom:40px;}
+@media(max-width:700px){.footgrid{grid-template-columns:1fr;}}
+.footgrid h4{font-family:var(--mono);font-size:14px;color:var(--text-dim);margin-bottom:14px;}
+.footgrid h4::before{content:'## ';color:var(--green);}
+.footgrid ul{list-style:none;}
+.footgrid li{margin-bottom:9px;font-size:15.5px;}
+.footgrid li a:hover{color:var(--green);}
+.foot-brand{font-family:var(--mono);font-weight:800;font-size:20px;color:var(--text-bright);margin-bottom:10px;}
+.foot-brand span{color:var(--green);}
+.foot-desc{color:var(--text-dim);font-size:15.5px;max-width:340px;}
+.badgerow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px;}
+.badge{
+  font-family:var(--mono);font-size:12.5px;display:flex;border-radius:4px;overflow:hidden;border:1px solid var(--border-muted);
+}
+.badge span{padding:4px 8px;}
+.badge span:first-child{background:#21262d;color:var(--text-dim);}
+.badge span:last-child{background:var(--green-bg);color:#fff;}
+.foot-bottom{
+  border-top:1px solid var(--border-muted);padding-top:24px;
+  display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
+  font-family:var(--mono);font-size:14px;color:var(--text-dim);
+}
+
+/* ---------- whatsapp fab ---------- */
+.wa-fab{
+  position:fixed;right:22px;bottom:22px;z-index:200;
+  display:flex;align-items:center;gap:0;
+  background:#25D366;color:#fff;border-radius:30px;
+  box-shadow:0 8px 24px rgba(0,0,0,0.35);
+  overflow:hidden;transition:box-shadow .2s;
+}
+.wa-fab:hover{box-shadow:0 10px 30px rgba(0,0,0,0.45);}
+.wa-fab .wa-icon{
+  width:56px;height:56px;flex-shrink:0;display:flex;align-items:center;justify-content:center;
+}
+.wa-fab .wa-label{
+  max-width:0;overflow:hidden;white-space:nowrap;
+  font-family:var(--mono);font-size:15px;font-weight:600;
+  transition:max-width .25s ease,padding .25s ease;
+}
+.wa-fab:hover .wa-label{max-width:170px;padding-right:18px;}
+
+/* ---------- github repo badge ---------- */
+.gh-badge{
+  background:var(--bg-elev);border:1px solid var(--border);border-radius:8px;
+  padding:20px 22px;margin-top:26px;
+}
+.gh-badge-top{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.gh-badge-top svg{flex-shrink:0;}
+.gh-badge-name{font-family:var(--mono);font-weight:700;color:var(--text-bright);font-size:17px;}
+.gh-badge-desc{color:var(--text-dim);font-size:15.5px;margin-bottom:14px;}
+.gh-badge-meta{display:flex;gap:16px;align-items:center;flex-wrap:wrap;}
+.gh-badge-meta span{
+  font-family:var(--mono);font-size:14px;color:var(--text-dim);
+  display:flex;align-items:center;gap:5px;
+}
+.gh-badge-meta .lang-dot{width:9px;height:9px;border-radius:50%;background:var(--blue);}
+.gh-badge .btn{margin-top:16px;width:100%;justify-content:center;}
+
+@media(prefers-reduced-motion:reduce){
+  *{animation:none !important;transition:none !important;scroll-behavior:auto !important;}
+}
+</style>
 </head>
 <body>
-    <!-- Google Translate Widget -->
-    <div id="google_translate_element"></div>
 
-    <!-- Navigation -->
-    <nav class="navbar" id="navbar">
-        <div class="nav-container">
-            <a href="#home" class="logo">
-                <span class="logo-w">W</span>
-                <span class="logo-text">REFACTOR</span>
-            </a>
-            <div class="nav-links">
-                <a href="#about" data-translate="nav_about">About</a>
-                <a href="#services" data-translate="nav_services">Services</a>
-                <a href="#pricing" data-translate="nav_pricing">Pricing</a>
-                <a href="#portfolio" data-translate="nav_works">Works</a>
-                <a href="#contact" class="nav-cta" data-translate="nav_contact">Get In Touch</a>
-            </div>
-            <div class="hamburger" id="hamburger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
+<header class="chrome">
+  <div class="chrome-bar">
+    <div class="chrome-dots"><span></span><span></span><span></span></div>
+    <div class="chrome-address">webrefactor.dev — refactor your presence</div>
+    <div class="chrome-repo"><span class="dot"></span><b>webrefactor</b>/main</div>
+    <div class="theme-toggle" id="theme-toggle" role="group" aria-label="Theme">
+      <button type="button" data-theme-btn="dark" class="active" aria-label="Dark mode">🌙</button>
+      <button type="button" data-theme-btn="light" aria-label="Light mode">☀️</button>
+    </div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <a class="tab" data-target="home" href="#home"><span class="dot"></span>home.tsx</a>
+    <a class="tab" data-target="services" href="#services"><span class="dot"></span>services.tsx</a>
+    <a class="tab" data-target="portfolio" href="#portfolio"><span class="dot"></span>portfolio.tsx</a>
+    <a class="tab" data-target="pricing" href="#pricing"><span class="dot"></span>pricing.tsx</a>
+    <a class="tab" data-target="calculator" href="#calculator"><span class="dot"></span>calculator.tsx</a>
+    <a class="tab" data-target="contact" href="#contact"><span class="dot"></span>contact.tsx</a>
+  </nav>
+</header>
+
+<!-- ============ HERO ============ -->
+<section class="hero" id="home">
+  <div class="parallax-field" id="hero-parallax">
+    <span class="frag" data-speed="0.15" style="top:8%;left:6%;">const business = require('./legacy');</span>
+    <span class="frag" data-speed="0.3" style="top:18%;left:72%;">git commit -m "ship it"</span>
+    <span class="frag" data-speed="0.22" style="top:38%;left:2%;">npm run build --prod</span>
+    <span class="frag" data-speed="0.4" style="top:58%;left:80%;">status: 200 OK</span>
+    <span class="frag" data-speed="0.18" style="top:74%;left:10%;">export default Refactor;</span>
+    <span class="frag" data-speed="0.35" style="top:85%;left:65%;">// TODO: nothing. it ships.</span>
+  </div>
+  <div class="wrap hero-grid">
+    <div class="diffblock">
+      <div class="diffblock-head"><span>README.diff</span><span>unstaged changes</span></div>
+      <div class="dline dline--ctx"><span class="num">1</span><span class="marker"> </span><span class="code">// webrefactor/README.md</span></div>
+      <div class="dline dline--ctx"><span class="num">2</span><span class="marker"> </span><span class="code">export default function Site() {</span></div>
+      <div class="dline dline--rem"><span class="num">3</span><span class="marker">-</span><span class="code">  return &lt;Business slow unranked forgettable /&gt;</span></div>
+      <div class="dline dline--add"><span class="num">4</span><span class="marker">+</span><span class="code">  return &lt;Business fast ranked memorable /&gt;<span class="cursor"></span></span></div>
+      <div class="dline dline--ctx"><span class="num">5</span><span class="marker"> </span><span class="code">}</span></div>
+    </div>
+
+    <div class="hero-copy">
+      <h1>We refactor businesses into <span class="hl">fast, ranked, memorable</span> websites.</h1>
+      <p>Same business, better implementation. We rebuild slow, invisible, forgettable sites into ones that load fast, rank well, and get remembered — without touching what makes your business yours.</p>
+      <div class="btn-row">
+        <a class="btn btn-primary" href="#contact">Start a project →</a>
+        <a class="btn btn-outline" href="#portfolio">Review our work</a>
+      </div>
+      <div class="stat-row">
+        <div class="stat"><div class="n">150</div><div class="l">Projects shipped</div></div>
+        <div class="stat"><div class="n">90</div><div class="l">Clients retained</div></div>
+        <div class="stat"><div class="n">6</div><div class="l">Years in production</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ SERVICES: process + expertise ============ -->
+<section id="services">
+  <div class="wrap">
+    <div class="eyebrow">git log --oneline --graph</div>
+    <h2 class="title">How a rebuild ships</h2>
+    <p class="lede">Four commits, in order. Nothing skips the queue — each one has to merge clean before the next opens.</p>
+
+    <div class="commitlog">
+      <div class="commit">
+        <div class="commit-head"><span class="commit-hash">a1b2c3d</span><span class="commit-msg">refactor: define</span></div>
+        <p class="commit-body">We map what makes your business distinct — audience, voice, and the one thing competitors can't copy — before any design starts.</p>
+        <div class="commit-files"><b>1</b> file changed · brand-brief.md</div>
+      </div>
+      <div class="commit">
+        <div class="commit-head"><span class="commit-hash">e4f5a6b</span><span class="commit-msg">refactor: design</span></div>
+        <p class="commit-body">Wireframes become interface. Every screen earns its place before it earns a pixel of polish.</p>
+        <div class="commit-files"><b>12</b> files changed · ui-kit/</div>
+      </div>
+      <div class="commit">
+        <div class="commit-head"><span class="commit-hash">9c8d7e6</span><span class="commit-msg">refactor: build</span></div>
+        <p class="commit-body">Built in React or Vue for the target, not the trend, with a performance budget enforced from the first commit.</p>
+        <div class="commit-files"><b>84</b> files changed · src/</div>
+      </div>
+      <div class="commit">
+        <div class="commit-head"><span class="commit-hash">f0e1d2c</span><span class="commit-msg">refactor: launch</span></div>
+        <p class="commit-body">Tested, indexed, and monitored, then we stay on call for the first month in case production disagrees with staging.</p>
+        <div class="commit-files"><b>3</b> files changed · deploy.yml</div>
+      </div>
+    </div>
+
+    <div class="expertise">
+      <div class="eyebrow">exports from services.tsx</div>
+      <h2 class="title">What's inside</h2>
+      <p class="lede">Six modules. Pick what your project imports.</p>
+
+      <div class="filetabs" id="filetabs" role="tablist">
+        <button class="filetab active" data-panel="frontend" style="border-color:var(--border)"><span class="sq" style="background:var(--blue)"></span>frontend.jsx</button>
+        <button class="filetab" data-panel="commerce"><span class="sq" style="background:var(--purple)"></span>commerce.ts</button>
+        <button class="filetab" data-panel="seo"><span class="sq" style="background:var(--green)"></span>seo.config</button>
+        <button class="filetab" data-panel="design"><span class="sq" style="background:var(--yellow)"></span>design.fig</button>
+        <button class="filetab" data-panel="brand"><span class="sq" style="background:var(--red)"></span>brand.kit</button>
+        <button class="filetab" data-panel="research"><span class="sq" style="background:var(--blue)"></span>research.md</button>
+      </div>
+
+      <div class="filepanel active" data-panel="frontend">
+        <div class="obj-line"><span class="key">const</span> service = {</div>
+        <h3>Frontend Development</h3>
+        <p>Interfaces built with React and Vue, tuned for the device in someone's hand — not the monitor on our desk.</p>
+        <div class="chiprow"><span class="chip">React & Vue.js</span><span class="chip">Responsive layout</span><span class="chip">Core Web Vitals</span></div>
+      </div>
+      <div class="filepanel" data-panel="commerce">
+        <div class="obj-line"><span class="key">const</span> service = {</div>
+        <h3>E-Commerce</h3>
+        <p>Storefronts that survive a sale-day traffic spike — from cart to checkout to reconciled inventory.</p>
+        <div class="chiprow"><span class="chip">Payment gateways</span><span class="chip">Inventory sync</span><span class="chip">Security first</span></div>
+      </div>
+      <div class="filepanel" data-panel="seo">
+        <div class="obj-line"><span class="key">const</span> service = {</div>
+        <h3>SEO Optimization</h3>
+        <p>Rankings earned through structure, not tricks — semantic markup, sitemap discipline, and content that answers the query.</p>
+        <div class="chiprow"><span class="chip">Keyword mapping</span><span class="chip">On-page SEO</span><span class="chip">Search Console reporting</span></div>
+      </div>
+      <div class="filepanel" data-panel="design">
+        <div class="obj-line"><span class="key">const</span> service = {</div>
+        <h3>Product Design</h3>
+        <p>Research first, pixels second — prototypes tested on real users before a line of production code exists.</p>
+        <div class="chiprow"><span class="chip">UI/UX design</span><span class="chip">Prototyping</span><span class="chip">Usability testing</span></div>
+      </div>
+      <div class="filepanel" data-panel="brand">
+        <div class="obj-line"><span class="key">const</span> service = {</div>
+        <h3>Branding</h3>
+        <p>A visual system your team can actually use — logo lockups, a type scale, and a voice guide that survives a rebrand of the rebrand.</p>
+        <div class="chiprow"><span class="chip">Logo & mark</span><span class="chip">Brand guidelines</span><span class="chip">Visual identity</span></div>
+      </div>
+      <div class="filepanel" data-panel="research">
+        <div class="obj-line"><span class="key">const</span> service = {</div>
+        <h3>UX Research</h3>
+        <p>We talk to your users before we talk to your developers. Interviews and surveys turn assumptions into decisions.</p>
+        <div class="chiprow"><span class="chip">User interviews</span><span class="chip">Surveys</span><span class="chip">Usability audits</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PORTFOLIO ============ -->
+<section id="portfolio">
+  <div class="wrap">
+    <div class="eyebrow">git log --stat --author=webrefactor</div>
+    <h2 class="title">Recently deployed</h2>
+    <p class="lede">Seven merges, seven different problems. Filter by the kind of business.</p>
+
+    <div class="filterrow" id="filterrow">
+      <button class="filterbtn active" data-filter="all">--all</button>
+      <button class="filterbtn" data-filter="e-commerce">--e-commerce</button>
+      <button class="filterbtn" data-filter="corporate">--corporate</button>
+      <button class="filterbtn" data-filter="ngo">--ngo</button>
+      <button class="filterbtn" data-filter="service">--service</button>
+    </div>
+
+    <div class="worklist" id="worklist">
+      <div class="workitem" data-cat="corporate">
+        <span class="hash">b3f1a90</span>
+        <div class="main"><strong>Incorpiq</strong><span>Corporate presence rebuilt for a consulting firm expanding into new markets.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--corporate">corporate</span>
+          <a class="visit" href="https://incorpiq.com" target="_blank" rel="noopener">visit →</a>
         </div>
-    </nav>
-
-    <!-- Hero Section with Parallax -->
-    <section class="hero" id="home">
-        <div class="parallax-bg" id="parallax-bg"></div>
-        <div class="hero-content">
-            <div class="hero-badge" data-translate="hero_badge">Digital Excellence</div>
-            <h1 class="hero-title">
-                <span class="hero-line">Websites That</span>
-                <span class="hero-line gradient-text">Rank, Engage,</span>
-                <span class="hero-line">and Convert</span>
-            </h1>
-            <p class="hero-description" data-translate="hero_description">
-                We craft extraordinary digital experiences that blend innovative design with cutting-edge technology. 
-                Your vision, our expertise.
-            </p>
-            <div class="hero-buttons">
-                <a href="#pricing" class="btn btn-primary" data-translate="hero_cta_pricing">View Pricing</a>
-                <a href="#portfolio" class="btn btn-secondary" data-translate="hero_cta_portfolio">See Our Work</a>
-            </div>
+      </div>
+      <div class="workitem" data-cat="e-commerce">
+        <span class="hash">7d2c441</span>
+        <div class="main"><strong>Pepedeals</strong><span>Full storefront refactor — faster checkout, cleaner catalog, more completed carts.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--e-commerce">e-commerce</span>
+          <a class="visit" href="https://pepedeals.com" target="_blank" rel="noopener">visit →</a>
         </div>
-        <div class="scroll-indicator">
-            <div class="scroll-line"></div>
-            <span data-translate="scroll_text">Scroll</span>
+      </div>
+      <div class="workitem" data-cat="e-commerce">
+        <span class="hash">4a9e0f2</span>
+        <div class="main"><strong>Zyozi</strong><span>Automated order flow so the team stops copy-pasting spreadsheets.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--e-commerce">e-commerce</span>
+          <a class="visit" href="https://zyozi.com" target="_blank" rel="noopener">visit →</a>
         </div>
-    </section>
-
-    <!-- About Section with Parallax Cards -->
-    <section class="about" id="about">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label" data-translate="about_label">Who We Are</span>
-                <h2 class="section-title" data-translate="about_title">Crafting Digital Excellence</h2>
-                <p class="section-description" data-translate="about_description">
-                    At Web Refactor, we specialize in creating custom websites that blend innovative design 
-                    with top-notch functionality. We deliver user-friendly, high-performing sites perfectly 
-                    tailored to your business needs.
-                </p>
-            </div>
-
-            <div class="process-cards">
-                <div class="process-card" data-scroll-reveal>
-                    <div class="process-icon">01</div>
-                    <h3 data-translate="process_define">Define</h3>
-                    <p data-translate="process_define_desc">
-                        We capture what makes your business unique and translate it into a cohesive identity 
-                        with compelling brand stories and clear core values.
-                    </p>
-                </div>
-                <div class="process-card" data-scroll-reveal>
-                    <div class="process-icon">02</div>
-                    <h3 data-translate="process_design">Design</h3>
-                    <p data-translate="process_design_desc">
-                        We blend your unique identity with visually appealing and functional design, 
-                        creating a cohesive brand that captures your essence.
-                    </p>
-                </div>
-                <div class="process-card" data-scroll-reveal>
-                    <div class="process-icon">03</div>
-                    <h3 data-translate="process_build">Build</h3>
-                    <p data-translate="process_build_desc">
-                        We utilize modern technologies for development, SEO optimization, and seamless 
-                        user experience to build your high-performance site.
-                    </p>
-                </div>
-                <div class="process-card" data-scroll-reveal>
-                    <div class="process-icon">04</div>
-                    <h3 data-translate="process_launch">Launch</h3>
-                    <p data-translate="process_launch_desc">
-                        We ensure smooth deployment with thorough testing and optimization, 
-                        delivering an impactful online presence from day one.
-                    </p>
-                </div>
-            </div>
+      </div>
+      <div class="workitem" data-cat="ngo">
+        <span class="hash">1c88d3e</span>
+        <div class="main"><strong>Gouri Sevapeeth</strong><span>A donation-first site that makes trust visible in the first scroll.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--ngo">ngo</span>
+          <a class="visit" href="https://gourisevapeeth.org/" target="_blank" rel="noopener">visit →</a>
         </div>
-    </section>
-
-    <!-- Services Section -->
-    <section class="services" id="services">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label" data-translate="services_label">Our Expertise</span>
-                <h2 class="section-title" data-translate="services_title">Transforming Ideas into Digital Solutions</h2>
-            </div>
-
-            <div class="services-grid">
-                <div class="service-card" data-scroll-reveal>
-                    <div class="service-number">01</div>
-                    <h3 data-translate="service_product">Product Design</h3>
-                    <p data-translate="service_product_desc">
-                        Creating innovative, user-centered solutions with comprehensive design strategies 
-                        from research to prototyping.
-                    </p>
-                </div>
-                <div class="service-card" data-scroll-reveal>
-                    <div class="service-number">02</div>
-                    <h3 data-translate="service_branding">Branding</h3>
-                    <p data-translate="service_branding_desc">
-                        Building strong, cohesive identities with unique brand stories, visual elements, 
-                        and messaging that resonate.
-                    </p>
-                </div>
-                <div class="service-card" data-scroll-reveal>
-                    <div class="service-number">03</div>
-                    <h3 data-translate="service_frontend">Frontend Development</h3>
-                    <p data-translate="service_frontend_desc">
-                        Creating dynamic, responsive interfaces using latest technologies for 
-                        high-performance user experiences.
-                    </p>
-                </div>
-                <div class="service-card" data-scroll-reveal>
-                    <div class="service-number">04</div>
-                    <h3 data-translate="service_ux">UX Research</h3>
-                    <p data-translate="service_ux_desc">
-                        Conducting thorough research to understand user behavior and create 
-                        intuitive, effective solutions.
-                    </p>
-                </div>
-                <div class="service-card" data-scroll-reveal>
-                    <div class="service-number">05</div>
-                    <h3 data-translate="service_illustration">Illustration</h3>
-                    <p data-translate="service_illustration_desc">
-                        Creating custom, visually compelling artwork that enhances brand identity 
-                        and captivates audiences.
-                    </p>
-                </div>
-                <div class="service-card" data-scroll-reveal>
-                    <div class="service-number">06</div>
-                    <h3 data-translate="service_ecommerce">E-Commerce</h3>
-                    <p data-translate="service_ecommerce_desc">
-                        Building secure, user-friendly online stores with seamless transactions 
-                        and engaging shopping experiences.
-                    </p>
-                </div>
-            </div>
+      </div>
+      <div class="workitem" data-cat="service">
+        <span class="hash">90bb217</span>
+        <div class="main"><strong>Patra Repair</strong><span>Local service site built to rank for the searches that turn into calls.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--service">service</span>
+          <a class="visit" href="https://patrarepair.com/" target="_blank" rel="noopener">visit →</a>
         </div>
-    </section>
-
-    <!-- Pricing Calculator Section -->
-    <section class="pricing-calculator" id="pricing">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label" data-translate="pricing_label">Pricing</span>
-                <h2 class="section-title" data-translate="pricing_title">Price Estimate Calculator</h2>
-                <p class="section-description" data-translate="pricing_description">
-                    Get an instant estimate for your project. Select your requirements and see the price in your preferred currency.
-                </p>
-            </div>
-
-            <div class="calculator-container">
-                <div class="calculator-form">
-                    <div class="form-group">
-                        <label data-translate="calc_project_type">Project Type</label>
-                        <select id="projectType" class="form-control">
-                            <option value="0" data-translate="calc_select">Select...</option>
-                            <option value="500" data-translate="calc_landing">Landing Page - $500</option>
-                            <option value="1500" data-translate="calc_business">Business Website - $1,500</option>
-                            <option value="3000" data-translate="calc_ecommerce">E-Commerce Store - $3,000</option>
-                            <option value="5000" data-translate="calc_webapp">Custom Web App - $5,000</option>
-                            <option value="2000" data-translate="calc_redesign">Website Redesign - $2,000</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label data-translate="calc_pages">Number of Pages</label>
-                        <input type="range" id="pages" min="1" max="50" value="5" class="slider">
-                        <span id="pagesValue">5</span> <span data-translate="calc_pages_unit">pages</span>
-                    </div>
-
-                    <div class="form-group">
-                        <label data-translate="calc_features">Additional Features</label>
-                        <div class="checkbox-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" value="300" class="feature-checkbox">
-                                <span data-translate="calc_seo">SEO Optimization - $300</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" value="400" class="feature-checkbox">
-                                <span data-translate="calc_cms">CMS Integration - $400</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" value="500" class="feature-checkbox">
-                                <span data-translate="calc_payment">Payment Gateway - $500</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" value="250" class="feature-checkbox">
-                                <span data-translate="calc_analytics">Analytics Setup - $250</span>
-                            </label>
-                            <label class="checkbox-label">
-                                <input type="checkbox" value="600" class="feature-checkbox">
-                                <span data-translate="calc_multilang">Multi-language Support - $600</span>
-                            </label>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label data-translate="calc_currency">Currency</label>
-                        <select id="currency" class="form-control">
-                            <option value="USD">USD ($)</option>
-                            <option value="INR">INR (₹)</option>
-                            <option value="EUR">EUR (€)</option>
-                            <option value="GBP">GBP (£)</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="calculator-result">
-                    <div class="result-header" data-translate="calc_estimate">Estimated Price</div>
-                    <div class="result-price" id="totalPrice">$0</div>
-                    <div class="result-breakdown">
-                        <div class="breakdown-item">
-                            <span data-translate="calc_base">Base Project:</span>
-                            <span id="basePrice">$0</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span data-translate="calc_pages_cost">Pages Cost:</span>
-                            <span id="pagesCost">$0</span>
-                        </div>
-                        <div class="breakdown-item">
-                            <span data-translate="calc_features_cost">Features Cost:</span>
-                            <span id="featuresCost">$0</span>
-                        </div>
-                    </div>
-                    <a href="mailto:admin@webrefactor.com?subject=Project Quote Request" class="btn btn-primary" data-translate="calc_request">Request Quote</a>
-                </div>
-            </div>
+      </div>
+      <div class="workitem" data-cat="corporate">
+        <span class="hash">5f6a8c0</span>
+        <div class="main"><strong>Caravi Patwa</strong><span>A portfolio that reads like a case study, not a brochure.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--corporate">corporate</span>
+          <a class="visit" href="https://caravipatwa.com/" target="_blank" rel="noopener">visit →</a>
         </div>
-    </section>
-
-    <!-- Pricing Plans Section -->
-    <section class="pricing-plans">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label" data-translate="plans_label">Plans & Packages</span>
-                <h2 class="section-title" data-translate="plans_title">Choose Your Perfect Plan</h2>
-            </div>
-
-            <div class="currency-selector">
-                <label data-translate="plans_currency">View Prices in:</label>
-                <div class="currency-buttons">
-                    <button class="currency-btn active" data-currency="USD">USD</button>
-                    <button class="currency-btn" data-currency="INR">INR</button>
-                    <button class="currency-btn" data-currency="EUR">EUR</button>
-                    <button class="currency-btn" data-currency="GBP">GBP</button>
-                </div>
-            </div>
-
-            <div class="plans-grid">
-                <div class="plan-card" data-scroll-reveal>
-                    <div class="plan-header">
-                        <h3 data-translate="plan_starter">Starter</h3>
-                        <div class="plan-price">
-                            <span class="currency-symbol">$</span>
-                            <span class="price-amount" data-usd="999" data-inr="83000" data-eur="920" data-gbp="790">999</span>
-                        </div>
-                        <p data-translate="plan_starter_desc">Perfect for small businesses</p>
-                    </div>
-                    <ul class="plan-features">
-                        <li data-translate="plan_starter_f1">✓ Up to 5 pages</li>
-                        <li data-translate="plan_starter_f2">✓ Responsive design</li>
-                        <li data-translate="plan_starter_f3">✓ Basic SEO setup</li>
-                        <li data-translate="plan_starter_f4">✓ Contact form</li>
-                        <li data-translate="plan_starter_f5">✓ 1 month support</li>
-                    </ul>
-                    <a href="mailto:admin@webrefactor.com?subject=Starter Plan Inquiry" class="btn btn-outline" data-translate="plan_cta">Get Started</a>
-                </div>
-
-                <div class="plan-card featured" data-scroll-reveal>
-                    <div class="plan-badge" data-translate="plan_popular">Most Popular</div>
-                    <div class="plan-header">
-                        <h3 data-translate="plan_professional">Professional</h3>
-                        <div class="plan-price">
-                            <span class="currency-symbol">$</span>
-                            <span class="price-amount" data-usd="2499" data-inr="208000" data-eur="2300" data-gbp="1970">2499</span>
-                        </div>
-                        <p data-translate="plan_professional_desc">Ideal for growing businesses</p>
-                    </div>
-                    <ul class="plan-features">
-                        <li data-translate="plan_pro_f1">✓ Up to 15 pages</li>
-                        <li data-translate="plan_pro_f2">✓ Custom design</li>
-                        <li data-translate="plan_pro_f3">✓ Advanced SEO</li>
-                        <li data-translate="plan_pro_f4">✓ CMS integration</li>
-                        <li data-translate="plan_pro_f5">✓ E-commerce ready</li>
-                        <li data-translate="plan_pro_f6">✓ 3 months support</li>
-                    </ul>
-                    <a href="mailto:admin@webrefactor.com?subject=Professional Plan Inquiry" class="btn btn-primary" data-translate="plan_cta">Get Started</a>
-                </div>
-
-                <div class="plan-card" data-scroll-reveal>
-                    <div class="plan-header">
-                        <h3 data-translate="plan_enterprise">Enterprise</h3>
-                        <div class="plan-price">
-                            <span class="currency-symbol">$</span>
-                            <span class="price-amount" data-usd="5999" data-inr="499000" data-eur="5520" data-gbp="4730">5999</span>
-                        </div>
-                        <p data-translate="plan_enterprise_desc">Complete digital solution</p>
-                    </div>
-                    <ul class="plan-features">
-                        <li data-translate="plan_ent_f1">✓ Unlimited pages</li>
-                        <li data-translate="plan_ent_f2">✓ Premium custom design</li>
-                        <li data-translate="plan_ent_f3">✓ Full SEO & marketing</li>
-                        <li data-translate="plan_ent_f4">✓ Advanced integrations</li>
-                        <li data-translate="plan_ent_f5">✓ Custom web app</li>
-                        <li data-translate="plan_ent_f6">✓ 6 months support</li>
-                        <li data-translate="plan_ent_f7">✓ Priority support</li>
-                    </ul>
-                    <a href="mailto:admin@webrefactor.com?subject=Enterprise Plan Inquiry" class="btn btn-outline" data-translate="plan_cta">Get Started</a>
-                </div>
-            </div>
+      </div>
+      <div class="workitem" data-cat="ngo">
+        <span class="hash">de41b7a</span>
+        <div class="main"><strong>The Rishi Foundation</strong><span>Program pages restructured so donors find their cause in two clicks.</span></div>
+        <div style="display:flex;align-items:center;gap:14px;">
+          <span class="tag tag--ngo">ngo</span>
+          <a class="visit" href="https://therishifoundation.org/" target="_blank" rel="noopener">visit →</a>
         </div>
-    </section>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Portfolio Section -->
-    <section class="portfolio" id="portfolio">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label" data-translate="portfolio_label">Recent Works</span>
-                <h2 class="section-title" data-translate="portfolio_title">Our Latest Projects</h2>
+<!-- ============ PRICING ============ -->
+<section id="pricing">
+  <div class="wrap">
+    <div class="eyebrow">package.json → dependencies</div>
+    <h2 class="title">Pricing plans</h2>
+    <p class="lede">Three install sizes. Every plan ships responsive by default — and every add-on feature installs at no extra cost.</p>
+
+    <div class="region-toggle" id="region-toggle">
+      <button type="button" class="regionbtn active" data-region="global">--region=global</button>
+      <button type="button" class="regionbtn" data-region="india">--region=india 🇮🇳</button>
+    </div>
+    <div class="discount-banner" id="discount-banner">50% off every plan, all features included free · limited-time merge window</div>
+
+    <div class="pricegrid">
+      <div class="pricecard" data-old="499" data-cut="50">
+        <div class="pkgname">@webrefactor/<b>starter</b></div>
+        <h3>Starter</h3>
+        <div class="price"><span class="price-old">$499</span><span class="price-cut">-50%</span></div>
+        <div class="price" style="margin-top:4px;"><span class="price-live">$250</span> <span>/ project</span></div>
+        <div class="sub">Perfect for small businesses</div>
+        <ul class="depslist">
+          <li>5-page website</li>
+          <li>Responsive design</li>
+          <li>Basic SEO</li>
+          <li>Contact form</li>
+          <li>1 month of support</li>
+          <li>All add-ons free</li>
+        </ul>
+        <a class="btn btn-outline" href="#contact">Get started</a>
+      </div>
+      <div class="pricecard popular" data-old="999" data-cut="50">
+        <div class="badge">most installed</div>
+        <div class="pkgname">@webrefactor/<b>pro</b></div>
+        <h3>Professional</h3>
+        <div class="price"><span class="price-old">$999</span><span class="price-cut">-50%</span></div>
+        <div class="price" style="margin-top:4px;"><span class="price-live">$500</span> <span>/ project</span></div>
+        <div class="sub">For growing businesses</div>
+        <ul class="depslist">
+          <li>10-page website</li>
+          <li>Responsive design</li>
+          <li>Advanced SEO</li>
+          <li>3 months of support</li>
+          <li>Basic e-commerce</li>
+          <li>CMS integration</li>
+          <li>All add-ons free</li>
+        </ul>
+        <a class="btn btn-primary" href="#contact">Get started</a>
+      </div>
+      <div class="pricecard" data-old="1999" data-cut="50">
+        <div class="pkgname">@webrefactor/<b>enterprise</b></div>
+        <h3>Enterprise</h3>
+        <div class="price"><span class="price-old">$1999</span><span class="price-cut">-50%</span></div>
+        <div class="price" style="margin-top:4px;"><span class="price-live">$1000</span> <span>/ project</span></div>
+        <div class="sub">For large organizations</div>
+        <ul class="depslist">
+          <li>Unlimited pages</li>
+          <li>Premium SEO</li>
+          <li>Custom forms</li>
+          <li>12 months of support</li>
+          <li>Full e-commerce</li>
+          <li>Custom CMS</li>
+          <li>All add-ons free</li>
+        </ul>
+        <a class="btn btn-outline" href="#contact">Get started</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CALCULATOR ============ -->
+<section id="calculator">
+  <div class="wrap">
+    <div class="eyebrow">./estimate --interactive</div>
+    <h2 class="title">Price estimate calculator</h2>
+    <p class="lede">Set your flags below. The output updates as you type — no submit button, no waiting for a sales call.</p>
+
+    <div class="terminal">
+      <div class="term-head">
+        <div class="chrome-dots"><span></span><span></span><span></span></div>
+        <div class="lbl">estimate.sh — webrefactor</div>
+      </div>
+      <div class="term-body">
+        <div>
+          <div class="field">
+            <label>project-type</label>
+            <select id="c-type">
+              <option value="500">Basic website — $500</option>
+              <option value="1000" selected>Business website — $1000</option>
+              <option value="2000">E-commerce website — $2000</option>
+              <option value="3500">Custom web app — $3500</option>
+              <option value="5000">Enterprise solution — $5000</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>pages</label>
+            <div class="rangewrap">
+              <input type="range" id="c-pages" min="1" max="30" value="5">
+              <span class="rangeval" id="c-pages-val">5</span>
             </div>
-
-            <div class="portfolio-grid">
-                <div class="portfolio-item" data-scroll-reveal>
-                    <div class="portfolio-image">
-                        <img src="https://webrefactor.com/images/portfolio/patra_repair_small.png" alt="Patra Repair">
-                        <div class="portfolio-overlay">
-                            <a href="https://patrarepair.com/" target="_blank" class="portfolio-link">View Project →</a>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <span class="portfolio-category" data-translate="port_cat_branding">Branding</span>
-                        <h3>Patra Repairing</h3>
-                        <p data-translate="port_patra_desc">AC repair service portfolio website</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-item" data-scroll-reveal>
-                    <div class="portfolio-image">
-                        <img src="https://webrefactor.com/images/portfolio/zyozi_small.png" alt="Zyozi">
-                        <div class="portfolio-overlay">
-                            <a href="https://zyozi.com/" target="_blank" class="portfolio-link">View Project →</a>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <span class="portfolio-category" data-translate="port_cat_ecommerce">E-Commerce</span>
-                        <h3>Zyozi</h3>
-                        <p data-translate="port_zyozi_desc">Full-featured e-commerce platform</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-item" data-scroll-reveal>
-                    <div class="portfolio-image">
-                        <img src="https://webrefactor.com/images/portfolio/ayacenter_small.png" alt="Aya Center">
-                        <div class="portfolio-overlay">
-                            <a href="https://ayacenter.in/" target="_blank" class="portfolio-link">View Project →</a>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <span class="portfolio-category" data-translate="port_cat_service">Service Based</span>
-                        <h3>Aya Center</h3>
-                        <p data-translate="port_aya_desc">Service-based business website</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-item" data-scroll-reveal>
-                    <div class="portfolio-image">
-                        <img src="https://webrefactor.com/images/portfolio/gouri_small.png" alt="Gouri Sevapeeth">
-                        <div class="portfolio-overlay">
-                            <a href="https://gourisevapeeth.org/" target="_blank" class="portfolio-link">View Project →</a>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <span class="portfolio-category" data-translate="port_cat_frontend">Frontend Design</span>
-                        <h3>Gouri Sevapeeth</h3>
-                        <p data-translate="port_gouri_desc">NGO website with modern design</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-item" data-scroll-reveal>
-                    <div class="portfolio-image">
-                        <img src="https://webrefactor.com/images/portfolio/nike_landing_small-min.png" alt="Nike Landing">
-                        <div class="portfolio-overlay">
-                            <a href="https://nikeindia.netlify.app/" target="_blank" class="portfolio-link">View Project →</a>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <span class="portfolio-category" data-translate="port_cat_ux">UX-UI Design</span>
-                        <h3>Nike Demo</h3>
-                        <p data-translate="port_nike_desc">Modern landing page design</p>
-                    </div>
-                </div>
-
-                <div class="portfolio-item" data-scroll-reveal>
-                    <div class="portfolio-image">
-                        <img src="https://webrefactor.com/images/portfolio/weather_small-min.png" alt="Weatherofy">
-                        <div class="portfolio-overlay">
-                            <a href="https://isuro-weatherapp.netlify.app/" target="_blank" class="portfolio-link">View Project →</a>
-                        </div>
-                    </div>
-                    <div class="portfolio-info">
-                        <span class="portfolio-category" data-translate="port_cat_webapp">Web Application</span>
-                        <h3>Weatherofy</h3>
-                        <p data-translate="port_weather_desc">Real-time weather application</p>
-                    </div>
-                </div>
+          </div>
+          <div class="field">
+            <label>complexity</label>
+            <div class="radiorow" id="c-complexity">
+              <label class="radiopill checked"><input type="radio" name="complexity" value="1" checked>basic</label>
+              <label class="radiopill"><input type="radio" name="complexity" value="1.15">standard</label>
+              <label class="radiopill"><input type="radio" name="complexity" value="1.35">premium</label>
             </div>
+          </div>
+          <div class="field">
+            <label>timeline</label>
+            <div class="radiorow" id="c-timeline">
+              <label class="radiopill checked"><input type="radio" name="timeline" value="1" checked>standard (4–6 wks)</label>
+              <label class="radiopill"><input type="radio" name="timeline" value="1.25">expedited (2–3 wks)</label>
+              <label class="radiopill"><input type="radio" name="timeline" value="1.5">rush (1 wk)</label>
+            </div>
+          </div>
         </div>
-    </section>
 
-    <!-- Contact Section -->
-    <section class="contact" id="contact">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-label" data-translate="contact_label">Get In Touch</span>
-                <h2 class="section-title" data-translate="contact_title">Let's Build Something Great</h2>
-                <p class="section-description" data-translate="contact_description">
-                    Have an idea or an epic project in mind? Let's work together and make something great.
-                </p>
+        <div>
+          <div class="field">
+            <label>features</label>
+            <div class="checkgrid" id="c-features">
+              <label class="checkline"><input type="checkbox" value="0">e-commerce (free)</label>
+              <label class="checkline"><input type="checkbox" value="0">seo (free)</label>
+              <label class="checkline"><input type="checkbox" value="0">cms (free)</label>
+              <label class="checkline"><input type="checkbox" value="0">multi-language (free)</label>
+              <label class="checkline"><input type="checkbox" value="0">payment-gateway (free)</label>
+              <label class="checkline"><input type="checkbox" value="0">analytics (free)</label>
             </div>
-
-            <div class="contact-content">
-                <div class="contact-info">
-                    <div class="contact-item">
-                        <h3 data-translate="contact_location">Location</h3>
-                        <p>Kolkata, West Bengal, India</p>
-                    </div>
-                    <div class="contact-item">
-                        <h3 data-translate="contact_email">Email</h3>
-                        <a href="mailto:admin@webrefactor.com">admin@webrefactor.com</a>
-                    </div>
-                    <div class="contact-item">
-                        <h3 data-translate="contact_phone">Phone</h3>
-                        <a href="tel:+918335086651">+91 83350 86651</a>
-                    </div>
-                    <div class="contact-social">
-                        <a href="https://www.facebook.com/refactorweb/" target="_blank">Facebook</a>
-                        <a href="https://x.com/webrefactor" target="_blank">Twitter</a>
-                        <a href="https://www.instagram.com/webrefactor/" target="_blank">Instagram</a>
-                        <a href="https://www.linkedin.com/company/80340012" target="_blank">LinkedIn</a>
-                    </div>
-                </div>
-                <div class="contact-cta">
-                    <a href="mailto:admin@webrefactor.com?subject=Want to discuss about a project" class="btn btn-large" data-translate="contact_cta">Let's Talk</a>
-                </div>
-            </div>
+          </div>
         </div>
-    </section>
 
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <p>© 2024 Web Refactor. Design by <a href="https://www.linkedin.com/in/surojit-manna" target="_blank">Suro</a></p>
+        <div class="output" id="c-output">
+          <div class="comment">// estimated cost · 50% off applied · add-ons free</div>
+          <div class="brace">{</div>
+          <div class="output-line"><span class="key">"USD"</span>: <span class="val" id="out-usd">$0</span>,</div>
+          <div class="output-line"><span class="key">"EUR"</span>: <span class="val" id="out-eur">€0</span>,</div>
+          <div class="output-line"><span class="key">"GBP"</span>: <span class="val" id="out-gbp">£0</span>,</div>
+          <div class="output-line"><span class="key">"INR"</span>: <span class="val" id="out-inr">₹0</span> <span class="comment">// india — 70% off</span></div>
+          <div class="brace">}</div>
         </div>
-    </footer>
+        <p class="calc-note">This is an estimate for planning purposes — final pricing depends on scope once we've talked through your project. India pricing reflects a regional 70% discount off the standard rate.</p>
+      </div>
+    </div>
+  </div>
+</section>
 
-    <!-- Google Translate Script -->
-    <script type="text/javascript">
-        function googleTranslateElementInit() {
-            new google.translate.TranslateElement({
-                pageLanguage: 'en',
-                includedLanguages: 'en,hi,bn,es,fr,de,it,pt,ru,ja,ko,zh-CN,ar',
-                layout: google.translate.TranslateElement.InlineLayout.SIMPLE,
-                autoDisplay: false
-            }, 'google_translate_element');
-        }
-    </script>
-    <script type="text/javascript" src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-    
-    <script src="script.js"></script>
+<!-- ============ REVIEWS ============ -->
+<section id="reviews">
+  <div class="wrap">
+    <div class="eyebrow">merged pull requests</div>
+    <h2 class="title">What clients say after launch</h2>
+    <p class="lede">Six reviews, six approvals. No requested changes.</p>
+
+    <div class="reviewgrid">
+      <div class="reviewcard">
+        <div class="review-top">
+          <div class="avatar" style="background:var(--blue)">MS</div>
+          <div><div class="review-name">MD Sajid</div><div class="review-role">CEO, Zyozi</div></div>
+          <span class="approved">approved ✓</span>
+        </div>
+        <p>The rebuild changed how people experience our brand — sharp, on-brief, and genuinely ours.</p>
+      </div>
+      <div class="reviewcard">
+        <div class="review-top">
+          <div class="avatar" style="background:var(--purple)">BJ</div>
+          <div><div class="review-name">Bishwajit Jana</div><div class="review-role">Owner, Jana Aya Center</div></div>
+          <span class="approved">approved ✓</span>
+        </div>
+        <p>Good-looking and functional. Traffic went up within weeks of launch.</p>
+      </div>
+      <div class="reviewcard">
+        <div class="review-top">
+          <div class="avatar" style="background:var(--yellow)">GS</div>
+          <div><div class="review-name">Gouri Saha</div><div class="review-role">Owner, Gouri Sevapeeth</div></div>
+          <span class="approved">approved ✓</span>
+        </div>
+        <p>They understood what we were trying to say before we'd finished explaining it.</p>
+      </div>
+      <div class="reviewcard">
+        <div class="review-top">
+          <div class="avatar" style="background:var(--red)">SP</div>
+          <div><div class="review-name">Sajal Patra</div><div class="review-role">Owner, Patra Repair</div></div>
+          <span class="approved">approved ✓</span>
+        </div>
+        <p>The storefront is simple to manage and looks sharp on every device.</p>
+      </div>
+      <div class="reviewcard">
+        <div class="review-top">
+          <div class="avatar" style="background:var(--green)">RK</div>
+          <div><div class="review-name">Rajesh Kumar</div><div class="review-role">Director, Incorpiq</div></div>
+          <span class="approved">approved ✓</span>
+        </div>
+        <p>Clear communication start to finish, and the site shipped ahead of schedule.</p>
+      </div>
+      <div class="reviewcard">
+        <div class="review-top">
+          <div class="avatar" style="background:var(--blue)">PS</div>
+          <div><div class="review-name">Priya Sharma</div><div class="review-role">Founder, Pepedeals</div></div>
+          <span class="approved">approved ✓</span>
+        </div>
+        <p>Small details, big payoff — return on the rebuild showed up fast.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section id="contact">
+  <div class="wrap contact-grid">
+    <div>
+      <div class="eyebrow">$ whoami</div>
+      <h2 class="title">Get in touch</h2>
+      <p class="lede">Have an idea worth shipping? Tell us what's broken and we'll tell you what we'd change.</p>
+      <div class="whoami">
+        <div><span class="k">email</span> &nbsp;<a class="v" href="mailto:admin@webrefactor.com">admin@webrefactor.com</a></div>
+        <div><span class="k">phone</span> &nbsp;<a class="v" href="tel:+918335086651">+91 83350 86651</a></div>
+        <div><span class="k">location</span> &nbsp;<span class="v">India</span></div>
+      </div>
+      <div class="social-row">
+        <a href="#" aria-label="X / Twitter">X</a>
+        <a href="#" aria-label="LinkedIn">in</a>
+        <a href="#" aria-label="Instagram">ig</a>
+        <a href="#" aria-label="Facebook">fb</a>
+      </div>
+
+      <div class="gh-badge">
+        <div class="gh-badge-top">
+          <svg width="20" height="20" viewBox="0 0 16 16" fill="currentColor" style="color:var(--text-bright)"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
+          <span class="gh-badge-name">isurojit / webrefactor</span>
+        </div>
+        <p class="gh-badge-desc">Open-source repo behind this rebuild. Fork it, break it, or just read the commit history.</p>
+        <div class="gh-badge-meta">
+          <span><span class="lang-dot"></span>TypeScript</span>
+          <span>★ 128</span>
+          <span>⑂ 24</span>
+          <span>MIT license</span>
+        </div>
+        <a class="btn btn-outline" href="https://github.com/isurojit/webrefactor" target="_blank" rel="noopener">View on GitHub →</a>
+      </div>
+    </div>
+
+    <div class="commitform">
+      <div class="prompt">$ git commit <b>-m</b> "…"</div>
+      <form id="contact-form">
+        <div class="formfield">
+          <label>--author</label>
+          <input type="text" placeholder="Your name" required>
+        </div>
+        <div class="formfield">
+          <label>--email</label>
+          <input type="email" placeholder="you@company.com" required>
+        </div>
+        <div class="formfield">
+          <label>commit body</label>
+          <textarea placeholder="What are we building?" required></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%;justify-content:center;">push to webrefactor/main →</button>
+        <div class="form-msg" id="form-msg">✓ commit pushed. we'll pull this within 24h.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <div class="footgrid">
+      <div>
+        <div class="foot-brand">web<span>refactor</span></div>
+        <p class="foot-desc">We build custom websites that blend clean implementation with a design system worth keeping.</p>
+        <div class="badgerow">
+          <div class="badge"><span>rating</span><span>4.8/5 ★</span></div>
+          <div class="badge"><span>reviews</span><span>50+</span></div>
+        </div>
+      </div>
+      <div>
+        <h4>quick-links.md</h4>
+        <ul>
+          <li><a href="#home">Home</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#pricing">Pricing</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>services.md</h4>
+        <ul>
+          <li><a href="#services">Web Development</a></li>
+          <li><a href="#services">E-Commerce</a></li>
+          <li><a href="#services">SEO Optimization</a></li>
+          <li><a href="#services">UI/UX Design</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>© 2026 WebRefactor — refactored, not rewritten.</span>
+      <span>MIT-style honesty, zero legalese.</span>
+    </div>
+  </div>
+</footer>
+
+<a class="wa-fab" href="https://wa.me/918335086651?text=Hi!%20I'd%20like%20to%20talk%20about%20a%20website." target="_blank" rel="noopener" aria-label="Chat on WhatsApp">
+  <span class="wa-icon">
+    <svg width="30" height="30" viewBox="0 0 24 24" fill="#fff"><path d="M17.47 14.38c-.3-.15-1.77-.87-2.04-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.17-.17.2-.35.22-.65.07-.3-.15-1.26-.46-2.4-1.48-.89-.79-1.48-1.76-1.66-2.06-.17-.3-.02-.46.13-.61.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.37-.02-.52-.07-.15-.67-1.6-.91-2.2-.24-.58-.49-.5-.67-.51-.17-.01-.37-.01-.57-.01-.2 0-.52.07-.79.37-.27.3-1.04 1.02-1.04 2.47 0 1.46 1.07 2.87 1.22 3.07.15.2 2.1 3.2 5.08 4.49.71.31 1.26.49 1.69.63.71.22 1.36.19 1.87.12.57-.09 1.77-.72 2.02-1.42.25-.7.25-1.29.17-1.42-.07-.12-.27-.2-.57-.35z"/><path d="M12.01 2C6.5 2 2 6.48 2 12c0 1.85.5 3.58 1.36 5.07L2 22l5.06-1.32A9.94 9.94 0 0 0 12.01 22C17.52 22 22 17.52 22 12S17.52 2 12.01 2zm0 18.15c-1.63 0-3.16-.44-4.48-1.22l-.32-.19-3.01.79.8-2.93-.21-.3A8.14 8.14 0 0 1 3.85 12c0-4.5 3.66-8.15 8.16-8.15S20.16 7.5 20.16 12s-3.65 8.15-8.15 8.15z"/></svg>
+  </span>
+  <span class="wa-label">Chat on WhatsApp</span>
+</a>
+
+<script>
+// ---- theme toggle ----
+(function(){
+  var btns = document.querySelectorAll('#theme-toggle [data-theme-btn]');
+  var prefersLight = window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches;
+  function setTheme(mode){
+    if(mode === 'light'){ document.documentElement.setAttribute('data-theme','light'); }
+    else { document.documentElement.removeAttribute('data-theme'); }
+    btns.forEach(function(b){ b.classList.toggle('active', b.dataset.themeBtn === mode); });
+  }
+  btns.forEach(function(b){
+    b.addEventListener('click', function(){ setTheme(b.dataset.themeBtn); });
+  });
+  setTheme(prefersLight ? 'light' : 'dark');
+})();
+
+// ---- parallax on scroll ----
+(function(){
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce) return;
+  var frags = document.querySelectorAll('.frag');
+  var heroEl = document.querySelector('.hero');
+  var ticking = false;
+  function update(){
+    var y = window.scrollY;
+    frags.forEach(function(f){
+      var speed = parseFloat(f.dataset.speed) || 0.2;
+      f.style.transform = 'translateY(' + (y * speed * -1) + 'px)';
+    });
+    if(heroEl){
+      var offset = Math.min(y * 0.25, 120);
+      heroEl.style.setProperty('--glowY', offset + 'px');
+    }
+    ticking = false;
+  }
+  window.addEventListener('scroll', function(){
+    if(!ticking){ requestAnimationFrame(update); ticking = true; }
+  }, { passive:true });
+  update();
+})();
+
+// ---- scrollspy on editor tabs ----
+(function(){
+  var tabs = Array.prototype.slice.call(document.querySelectorAll('#tabs .tab'));
+  var sections = tabs.map(function(t){ return document.getElementById(t.dataset.target); }).filter(Boolean);
+  function setActive(id){
+    tabs.forEach(function(t){ t.classList.toggle('active', t.dataset.target === id); });
+  }
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){ setActive(e.target.id); }
+    });
+  }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+  sections.forEach(function(s){ io.observe(s); });
+})();
+
+// ---- expertise file tabs ----
+(function(){
+  var tabs = document.querySelectorAll('.filetab');
+  var panels = document.querySelectorAll('.filepanel');
+  tabs.forEach(function(tab){
+    tab.addEventListener('click', function(){
+      tabs.forEach(function(t){ t.classList.remove('active'); });
+      panels.forEach(function(p){ p.classList.remove('active'); });
+      tab.classList.add('active');
+      document.querySelector('.filepanel[data-panel="'+tab.dataset.panel+'"]').classList.add('active');
+    });
+  });
+})();
+
+// ---- pricing region toggle ----
+(function(){
+  var btns = document.querySelectorAll('#region-toggle .regionbtn');
+  var cards = document.querySelectorAll('.pricecard');
+  var banner = document.getElementById('discount-banner');
+  var inrRate = 83;
+
+  function render(region){
+    cards.forEach(function(card){
+      var old = parseFloat(card.dataset.old);
+      var oldEl = card.querySelector('.price-old');
+      var cutEl = card.querySelector('.price-cut');
+      var liveEl = card.querySelector('.price-live');
+      if(region === 'india'){
+        var indiaPrice = Math.round(old * 0.3 * inrRate);
+        oldEl.textContent = '₹' + Math.round(old * inrRate).toLocaleString('en-IN');
+        cutEl.textContent = '-70%';
+        liveEl.textContent = '₹' + indiaPrice.toLocaleString('en-IN');
+      } else {
+        oldEl.textContent = '$' + old;
+        cutEl.textContent = '-50%';
+        liveEl.textContent = '$' + Math.round(old * 0.5);
+      }
+    });
+    banner.textContent = region === 'india'
+      ? '70% off every plan for India · all features included free · limited-time merge window'
+      : '50% off every plan · all features included free · limited-time merge window';
+  }
+
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      render(btn.dataset.region);
+    });
+  });
+
+  render('global');
+})();
+
+// ---- portfolio filter ----
+(function(){
+  var btns = document.querySelectorAll('.filterbtn');
+  var items = document.querySelectorAll('.workitem');
+  btns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      btns.forEach(function(b){ b.classList.remove('active'); });
+      btn.classList.add('active');
+      var f = btn.dataset.filter;
+      items.forEach(function(it){
+        it.style.display = (f === 'all' || it.dataset.cat === f) ? '' : 'none';
+      });
+    });
+  });
+})();
+
+// ---- radio pill styling ----
+(function(){
+  document.querySelectorAll('.radiopill input').forEach(function(input){
+    input.addEventListener('change', function(){
+      var group = document.getElementsByName(input.name);
+      group.forEach(function(g){ g.closest('.radiopill').classList.remove('checked'); });
+      input.closest('.radiopill').classList.add('checked');
+    });
+  });
+})();
+
+// ---- calculator ----
+(function(){
+  var typeSel = document.getElementById('c-type');
+  var pages = document.getElementById('c-pages');
+  var pagesVal = document.getElementById('c-pages-val');
+  var features = document.querySelectorAll('#c-features input');
+  var complexity = document.getElementsByName('complexity');
+  var timeline = document.getElementsByName('timeline');
+
+  var rates = { USD: 1, INR: 83, EUR: 0.92, GBP: 0.79 };
+  var symbols = { USD: '$', INR: '₹', EUR: '€', GBP: '£' };
+  var GLOBAL_DISCOUNT = 0.5;   // 50% off standard rate
+  var INDIA_DISCOUNT = 0.3;    // pay 30% = 70% off standard rate
+
+  function fmt(n, cur){
+    var v = n * rates[cur];
+    return symbols[cur] + Math.round(v).toLocaleString('en-US');
+  }
+
+  function compute(){
+    var base = parseFloat(typeSel.value);
+    var pageCount = parseInt(pages.value, 10);
+    pagesVal.textContent = pageCount;
+    var pageCost = Math.max(0, pageCount - 5) * 50;
+
+    // feature add-ons are free — kept in the loop in case pricing ever changes
+    var featureCost = 0;
+    features.forEach(function(f){ if(f.checked) featureCost += parseFloat(f.value); });
+
+    var complexityMult = 1, timelineMult = 1;
+    complexity.forEach(function(c){ if(c.checked) complexityMult = parseFloat(c.value); });
+    timeline.forEach(function(t){ if(t.checked) timelineMult = parseFloat(t.value); });
+
+    var subtotal = (base + pageCost + featureCost) * complexityMult * timelineMult;
+    var globalTotal = subtotal * GLOBAL_DISCOUNT;
+    var indiaTotal = subtotal * INDIA_DISCOUNT;
+
+    document.getElementById('out-usd').textContent = fmt(globalTotal, 'USD');
+    document.getElementById('out-eur').textContent = fmt(globalTotal, 'EUR');
+    document.getElementById('out-gbp').textContent = fmt(globalTotal, 'GBP');
+    document.getElementById('out-inr').textContent = fmt(indiaTotal, 'INR');
+  }
+
+  [typeSel, pages].forEach(function(el){ el.addEventListener('input', compute); });
+  features.forEach(function(f){ f.addEventListener('change', compute); });
+  complexity.forEach(function(c){ c.addEventListener('change', compute); });
+  timeline.forEach(function(t){ t.addEventListener('change', compute); });
+  compute();
+})();
+
+// ---- contact form (demo, no backend) ----
+(function(){
+  var form = document.getElementById('contact-form');
+  var msg = document.getElementById('form-msg');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    msg.classList.add('show');
+    form.reset();
+  });
+})();
+</script>
 </body>
 </html>
